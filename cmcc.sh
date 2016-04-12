@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+
 schemas=(ZY="CMCC"
          HB="CMCC_HeBei"
          LN="CMCC_LiaoNing"
@@ -120,17 +121,52 @@ function build_number(){
   esac
 }
 
-function build_info(){
-  echo "build number is " $BUILD_NUMBER
+function confirm(){
+  echo
+  printf 'input yes to continue no to exit re to resetting [yes/no/re] :'
 
-  echo "scnema name is " $SCHEMA_NAME
-
-  echo "SUFFIX is " $SUFFIX
-
-  echo "export ipa name is " $EXPORT_IPA_NAME
+  read response
+  case $response in
+    [yY][eE][sS]|[yY])
+      IS_TO_BUILD='true'
+      ;;
+    [nN][oO]|[nN])
+      clear
+      exit
+      ;;
+    [rR][eE]|[rR])
+      IS_TO_BUILD='false'
+      ;;
+    *)
+      echo 'please input correct '
+      confirm
+      ;;
+  esac
 }
 
-function build(){
+function build_info(){
+  echo
+
+  echo '--------------------build_info----------------'
+
+  echo "build number ->" $BUILD_NUMBER
+
+  echo "scnema name ->" $SCHEMA_NAME
+
+  echo "SUFFIX ->" $SUFFIX
+
+  echo "export ipa name ->" $EXPORT_IPA_NAME
+
+  echo '----------------------------------------------'
+
+  echo
+
+  confirm
+}
+
+function archive(){
+  agvtool new-version -all $BUILD_NUMBER
+
   xcodebuild -workspace $WORKSPACE_NAME -scheme $SCHEMA_NAME -configuration Release clean archive -archivePath $ARCHIVE_DIRECTORY/$ARCHIVE_NAME
 
   xcodebuild -exportArchive -archivePath $ARCHIVE_DIRECTORY/$ARCHIVE_NAME -exportOptionsPlist $EXPORTOPTIONPLIST -exportPath $ARCHIVE_DIRECTORY/$TARGET_PATH
@@ -147,16 +183,35 @@ function uploadsvn(){
   svn import $ARCHIVE_DIRECTORY/$EXPORT_IPA_NAME $SVN_UPLOADPATH/$EXPORT_IPA_NAME --username $SVN_USERNAME --password $SVN_PASSWORD -m "upload {$EXPORT_IPA_NAME}"
 }
 
-select_schema_name
+function init_variable(){
+  select_schema_name
 
-build_number
+  build_number
 
-build_info
+  export_ipa
 
-export_ipa
+  build_info
+}
 
-build
+function build(){
+  archive
 
-uploadsvn
+  uploadsvn
 
-clean
+  clean
+}
+
+
+function main(){
+  init_variable
+
+  while [[ $IS_TO_BUILD == 'false' ]]; do
+    init_variable
+  done
+
+  clear
+
+  build
+}
+
+main
