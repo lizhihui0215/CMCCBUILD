@@ -13,6 +13,10 @@ schemas=(ZY="CMCC"
          FJ="CMCC_FuJian"
         )
 
+SOURCE_PATH=${BASH_SOURCE[0]}
+
+SOURCE_DIC="$( dirname "$SOURCE_PATH")"
+
 SVN_USERNAME=lizhihui@misquest.com
 
 SVN_PASSWORD=pccw1234
@@ -31,7 +35,7 @@ WORKSPACE_NAME=CMCC.xcworkspace
 
 TARGET_PATH=Target
 
-EXPORTOPTIONPLIST=./ExportOptions.plist
+EXPORTOPTIONPLIST=$SOURCE_DIC/ExportOptions.plist
 
 cd $WORKSPACE
 
