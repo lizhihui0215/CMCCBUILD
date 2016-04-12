@@ -31,7 +31,7 @@ WORKSPACE_NAME=CMCC.xcworkspace
 
 TARGET_PATH=Target
 
-EXPORTOPTIONPLIST=ExportOptions.plist
+EXPORTOPTIONPLIST=./ExportOptions.plist
 
 cd $WORKSPACE
 
@@ -116,6 +116,16 @@ function build_number(){
   esac
 }
 
+function build_info(){
+  echo "build number is " $BUILD_NUMBER
+
+  echo "scnema name is " $SCHEMA_NAME
+
+  echo "SUFFIX is " $SUFFIX
+
+  echo "export ipa name is " $EXPORT_IPA_NAME
+}
+
 function build(){
   xcodebuild -workspace $WORKSPACE_NAME -scheme $SCHEMA_NAME -configuration Release clean archive -archivePath $ARCHIVE_DIRECTORY/$ARCHIVE_NAME
 
@@ -137,6 +147,8 @@ select_schema_name
 
 build_number
 
+build_info
+
 export_ipa
 
 build
@@ -144,11 +156,3 @@ build
 uploadsvn
 
 clean
-
-echo "build number is " $BUILD_NUMBER
-
-echo "scnema name is " $SCHEMA_NAME
-
-echo "SUFFIX is " $SUFFIX
-
-echo "export ipa name is " $EXPORT_IPA_NAME
