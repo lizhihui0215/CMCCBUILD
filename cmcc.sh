@@ -180,6 +180,14 @@ function clean(){
 }
 
 function uploadsvn(){
+  SVN_REMOTE_IPA_NAME=$(svn ls $SVN_UPLOADPATH --username $SVN_USERNAME --password $SVN_PASSWORD)
+
+  if [[ $SVN_REMOTE_IPA_NAME == *$EXPORT_IPA_NAME* ]]; then
+    echo "deleting $SVN_UPLOADPATH/$EXPORT_IPA_NAME"
+    svn delete $SVN_UPLOADPATH/$EXPORT_IPA_NAME --username $SVN_USERNAME --password $SVN_PASSWORD -m "delete {$EXPORT_IPA_NAME}"
+    echo "deleting complete"
+  fi
+
   svn import $ARCHIVE_DIRECTORY/$EXPORT_IPA_NAME $SVN_UPLOADPATH/$EXPORT_IPA_NAME --username $SVN_USERNAME --password $SVN_PASSWORD -m "upload {$EXPORT_IPA_NAME}"
 }
 
