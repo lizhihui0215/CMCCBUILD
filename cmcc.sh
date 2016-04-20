@@ -144,6 +144,30 @@ function confirm(){
   esac
 }
 
+IS_UPLOAD_SVN='true'
+
+function confirm_upload_svn(){
+  echo
+  printf 'is upload svn yes to upload or no [yes/no] :'
+  read is_upload_svn
+  case $is_upload_svn in
+    [yY][eE][sS]|[yY])
+      IS_UPLOAD_SVN='true'
+      ;;
+    [nN][oO]|[nN])
+      clear
+      exit
+      ;;
+    [rR][eE]|[rR])
+      IS_UPLOAD_SVN='false'
+      ;;
+    *)
+      echo 'please input correct '
+      confirm
+      ;;
+  esac
+}
+
 function build_info(){
   echo
 
@@ -196,6 +220,8 @@ function init_variable(){
 
   build_number
 
+  confirm_upload_svn
+
   export_ipa
 
   build_info
@@ -204,7 +230,9 @@ function init_variable(){
 function build(){
   archive
 
-  uploadsvn
+  if [[ $IS_UPLOAD_SVN == 'true' ]]; then
+    uploadsvn
+  fi
 
   clean
 }
