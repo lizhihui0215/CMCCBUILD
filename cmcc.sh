@@ -155,10 +155,6 @@ function confirm_upload_svn(){
       IS_UPLOAD_SVN='true'
       ;;
     [nN][oO]|[nN])
-      clear
-      exit
-      ;;
-    [rR][eE]|[rR])
       IS_UPLOAD_SVN='false'
       ;;
     *)
