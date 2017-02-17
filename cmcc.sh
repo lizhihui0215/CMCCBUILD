@@ -24,21 +24,16 @@ SVN_PASSWORD=pccw1234
 
 SVN_UPLOADPATH=https://lizhihui%40misquest.com@114.251.247.77/EAM/ASSET/APP/APP_doc/100%20APP/ios%E7%89%88%E6%9C%AC
 
-WORKSPACE=~/Workspace/CMCC
-
 NOW=`date '+%Y-%m-%d-%H-%M-%S'`
 
 ARCHIVE_DIRECTORY=~/Documents/Build/CMCC/$NOW
 
 ARCHIVE_NAME=CMCC.xcarchive
 
-WORKSPACE_NAME=CMCC.xcworkspace
-
 TARGET_PATH=Target
 
 EXPORTOPTIONPLIST=$SOURCE_DIC/ExportOptions.plist
 
-cd $WORKSPACE
 
 function suffix(){
   local index=$1
@@ -55,6 +50,8 @@ function schema_name(){
 
   SCHEMA_NAME=${map:3}
 }
+
+
 
 function select_schema_name(){
 
@@ -98,11 +95,19 @@ function select_schema_name(){
 
 }
 
+function workspace() {
+  echo "please input workspace path:"
+  read WORKSPACE
+
+  echo "please input workspace name:"
+  read WORKSPACE_NAME
+}
+
 function export_ipa(){
   if [[ $SUFFIX == "ZY" ]]; then
-    EXPORT_IPA_NAME=EAM_IOS_V1.0\($BUILD_NUMBER\).ipa
+    EXPORT_IPA_NAME="EAM_IOS_V$BUILD_NUMBER.ipa"
   else
-    EXPORT_IPA_NAME=EAM_IOS_V1.0\($BUILD_NUMBER\)_$SUFFIX.ipa
+    EXPORT_IPA_NAME="EAM_IOS_V$BUILD_NUMBER\_$SUFFIX.ipa"
   fi
 }
 
@@ -169,6 +174,10 @@ function build_info(){
 
   echo '--------------------build_info----------------'
 
+  echo "workspace path ->" $WORKSPACE
+
+  echo "workspace name ->" $WORKSPACE_NAME
+
   echo "build number ->" $BUILD_NUMBER
 
   echo "scnema name ->" $SCHEMA_NAME
@@ -185,7 +194,7 @@ function build_info(){
 }
 
 function archive(){
-  agvtool new-version -all $BUILD_NUMBER
+  #agvtool new-version -all $BUILD_NUMBER
 
   xcodebuild -workspace $WORKSPACE_NAME -scheme $SCHEMA_NAME -configuration Release clean archive -archivePath $ARCHIVE_DIRECTORY/$ARCHIVE_NAME
 
@@ -212,6 +221,8 @@ function uploadsvn(){
 }
 
 function init_variable(){
+  workspace
+
   select_schema_name
 
   build_number
@@ -233,13 +244,14 @@ function build(){
   clean
 }
 
-
 function main(){
   init_variable
 
   while [[ $IS_TO_BUILD == 'false' ]]; do
     init_variable
   done
+
+  cd $WORKSPACE
 
   clear
 
